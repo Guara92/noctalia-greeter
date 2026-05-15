@@ -1,5 +1,7 @@
 #include "render/glyph_registry.h"
 
+#include "core/resource_paths.h"
+
 #include <charconv>
 #include <filesystem>
 #include <fstream>
@@ -25,7 +27,7 @@ std::optional<char32_t> parseCodepoint(std::string_view value) {
 
 std::unordered_map<std::string, char32_t> loadGlyphs() {
   std::unordered_map<std::string, char32_t> glyphs;
-  std::ifstream file("assets/fonts/tabler.json");
+  std::ifstream file(core::assetPath("fonts/tabler.json"));
   std::string line;
   while (std::getline(file, line)) {
     const auto keyBegin = line.find('"');

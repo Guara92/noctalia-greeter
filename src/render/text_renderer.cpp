@@ -1,16 +1,24 @@
 #include "render/text_renderer.h"
 
+#include "core/resource_paths.h"
+
 #include <cairo.h>
 #include <pango/pangocairo.h>
 #include <pango/pangofc-fontmap.h>
 
 #include <algorithm>
+#include <format>
 #include <stdexcept>
 #include <vector>
 
 namespace noctalia::render {
 
-TextRenderer::~TextRenderer() = default;
+TextRenderer::~TextRenderer() {
+  for (auto& [key, texture] : m_cache) {
+    (void)key;
+    destroy(texture);
+  }
+}
 
 TextTexture TextRenderer::render(const std::string& text, int fontSize, int maxWidth) {
   return renderWithFont(text, "sans-serif", fontSize, maxWidth);
@@ -19,7 +27,13 @@ TextTexture TextRenderer::render(const std::string& text, int fontSize, int maxW
 TextTexture TextRenderer::renderWithFont(const std::string& text, const char* family, int fontSize, int maxWidth) {
   static const bool fontLoaded = [] {
     FcConfig* config = FcConfigGetCurrent();
-    return FcConfigAppFontAddFile(config, reinterpret_cast<const FcChar8*>("assets/fonts/tabler.ttf")) == FcTrue;
+    const auto path = core::assetPath("fonts/tabler.ttf").string();
+    const bool ok = FcConfigAppFontAddFile(config, reinterpret_cast<const FcChar8*>(path.c_str())) == FcTrue;
+    FcConfigBuildFonts(config);
+    if (auto* fontMap = PANGO_FC_FONT_MAP(pango_cairo_font_map_get_default()); fontMap != nullptr) {
+      pango_fc_font_map_config_changed(fontMap);
+    }
+    return ok;
   }();
   (void)fontLoaded;
 
@@ -72,6 +86,16 @@ TextTexture TextRenderer::renderWithFont(const std::string& text, const char* fa
   cairo_destroy(measure);
   cairo_surface_destroy(measureSurface);
   return {.texture = tex, .width = width, .height = height};
+}
+
+const TextTexture& TextRenderer::cached(const std::string& text, const char* family, int fontSize, int maxWidth) {
+  const std::string key = std::format("{}\n{}\n{}\n{}", family, fontSize, maxWidth, text);
+  if (const auto it = m_cache.find(key); it != m_cache.end()) {
+    return it->second;
+  }
+  auto [it, inserted] = m_cache.emplace(key, renderWithFont(text, family, fontSize, maxWidth));
+  (void)inserted;
+  return it->second;
 }
 
 void TextRenderer::destroy(TextTexture& texture) {

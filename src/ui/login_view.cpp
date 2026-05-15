@@ -61,8 +61,8 @@ void LoginView::render(render::GlRenderer& renderer, int width, int height) {
   renderer.drawRect(x, y, panelW, panelH, 18.0f, withAlpha(kSurfaceVariant, 0.94f), withAlpha(kOutline, 0.90f), 1.0f);
   renderer.drawRect(x + 24.0f, y + 24.0f, leftW - 48.0f, panelH - 48.0f, 14.0f, withAlpha(kSurface, 0.54f),
                     withAlpha(kOutline, 0.55f), 1.0f);
-  renderer.drawRect(x + 48.0f, y + 50.0f, 72.0f, 72.0f, 20.0f, kPrimary);
-  renderer.drawGlyph(x + 65.0f, y + 66.0f, "moon-stars", 38, kOnPrimary);
+  renderer.drawRect(x + 48.0f, y + 50.0f, 72.0f, 72.0f, 20.0f, withAlpha(kPrimary, 0.16f), kPrimary, 1.0f);
+  renderer.drawNoctaliaLogo(x + 56.0f, y + 58.0f, 56.0f);
   renderer.drawText(x + 48.0f, y + 154.0f, "Noctalia", leftW - 84.0f, 34, kOnSurface);
   renderer.drawText(x + 50.0f, y + 196.0f, "Direct session login", leftW - 88.0f, 16, kOnSurfaceVariant);
   renderer.drawRect(x + 48.0f, y + panelH - 96.0f, leftW - 88.0f, 1.0f, 0.0f, withAlpha(kOutline, 0.9f));

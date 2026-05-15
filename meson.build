@@ -8,6 +8,9 @@ project('noctalia-greeter', ['c', 'cpp'],
 )
 
 cpp = meson.get_compiler('cpp')
+datadir = get_option('prefix') / get_option('datadir') / 'noctalia-greeter'
+
+add_project_arguments('-DNOCTALIA_GREETER_DATADIR="@0@"'.format(datadir), language: 'cpp')
 
 egl_dep            = dependency('egl')
 gles2_dep          = dependency('glesv2')
@@ -20,6 +23,7 @@ cairo_dep          = dependency('cairo')
 pango_dep          = dependency('pango')
 pangocairo_dep     = dependency('pangocairo')
 pangoft2_dep       = dependency('pangoft2')
+librsvg_dep        = dependency('librsvg-2.0', include_type: 'system')
 xkbcommon_dep      = dependency('xkbcommon')
 pam_dep            = cpp.find_library('pam')
 util_dep           = cpp.find_library('util', required: false)
@@ -42,6 +46,7 @@ xdg_shell_c = custom_target('xdg-shell-client-source',
 sources = files(
   'src/auth/pam_authenticator.cpp',
   'src/core/log.cpp',
+  'src/core/resource_paths.cpp',
   'src/main.cpp',
   'src/platform/debug_wayland_platform.cpp',
   'src/platform/drm_platform.cpp',
@@ -70,6 +75,7 @@ executable('noctalia-greeter',
     pango_dep,
     pangocairo_dep,
     pangoft2_dep,
+    librsvg_dep,
     xkbcommon_dep,
     pam_dep,
     util_dep,
@@ -79,3 +85,4 @@ executable('noctalia-greeter',
 
 install_data('data/pam/noctalia-greeter', install_dir: '/etc/pam.d')
 install_subdir('assets/fonts', install_dir: get_option('datadir') / 'noctalia-greeter')
+install_data('assets/noctalia.svg', install_dir: get_option('datadir') / 'noctalia-greeter')
