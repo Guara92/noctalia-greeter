@@ -13,4 +13,4 @@ if [ -z "${XDG_RUNTIME_DIR:-}" ] || [ ! -d "${XDG_RUNTIME_DIR}" ] || [ ! -w "${X
 fi
 
 unset WAYLAND_DISPLAY
-exec dbus-run-session -- cage -s -mlast -- "${GREETER_BIN}"
+exec dbus-run-session -- cage -s -- "${GREETER_BIN}"

@@ -66,7 +66,7 @@ uninstall:
 
 # Run under cage (same as greetd should use)
 run: build
-  dbus-run-session cage -s -mlast -- ./build/noctalia-greeter
+  dbus-run-session cage -s -- ./build/noctalia-greeter
 
 # Run under cage on your login session. Logs to ~/.cache/noctalia-greeter.log
 run-local: build
@@ -76,11 +76,11 @@ run-local: build
   mkdir -p "$(dirname "$log")"
   echo "user=$USER log=$log"
   echo "Recovery: just recover"
-  env NOCTALIA_GREETER_LOG="$log" dbus-run-session cage -s -mlast -- ./build/noctalia-greeter
+  env NOCTALIA_GREETER_LOG="$log" dbus-run-session cage -s -- ./build/noctalia-greeter
 
 # Run under cage with greetd-like env (no greetd socket)
 run-cage: build
-  dbus-run-session cage -s -mlast -- ./build/noctalia-greeter
+  dbus-run-session cage -s -- ./build/noctalia-greeter
 
 # Configure AddressSanitizer build dir
 configure-asan:
@@ -93,7 +93,7 @@ build-asan: configure-asan
 # Run under cage with AddressSanitizer enabled
 run-cage-asan: build-asan
   ASAN_OPTIONS=abort_on_error=1:fast_unwind_on_malloc=0:symbolize=1 \
-  dbus-run-session cage -s -mlast -- ./build-asan/noctalia-greeter
+  dbus-run-session cage -s -- ./build-asan/noctalia-greeter
 
 # Run in your current Wayland session (niri, sway, etc.) — no nested compositor
 run-niri: build
@@ -120,8 +120,8 @@ recover:
 # Usually fails manually with "Only owner of session may take control"; use run-local instead.
 run-greeter bin="/usr/local/bin/noctalia-greeter":
   @echo "Ensure greetd is stopped: sudo sv stop greetd"
-  sudo -u greeter dbus-run-session cage -s -mlast -- {{bin}}
+  sudo -u greeter dbus-run-session cage -s -- {{bin}}
 
 run-greeter-dev: build
   @echo "Ensure greetd is stopped: sudo sv stop greetd"
-  sudo -u greeter dbus-run-session cage -s -mlast -- ./build/noctalia-greeter
+  sudo -u greeter dbus-run-session cage -s -- ./build/noctalia-greeter

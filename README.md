@@ -110,6 +110,12 @@ Run inside an existing Wayland session:
 just run-niri
 ```
 
+To force single-monitor mode for debugging, use Cage with `-m last`:
+
+```bash
+dbus-run-session cage -s -m last -- ./build/noctalia-greeter
+```
+
 AddressSanitizer:
 
 ```bash
