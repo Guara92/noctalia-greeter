@@ -50,6 +50,9 @@ echo "info: applying greetd PAM runtime module patch..."
 echo "info: preparing greeter paths..."
 mkdir -p "${SYNCED_DATA_DIR}"
 chmod 0755 "${SYNCED_DATA_DIR}"
+if id -u "${GREETER_USER}" >/dev/null 2>&1; then
+  chown "${GREETER_USER}:${GREETER_USER}" "${SYNCED_DATA_DIR}"
+fi
 touch /var/log/noctalia-greeter.log /var/lib/noctalia-greeter/greeter.log /tmp/noctalia-greeter.log
 
 if id -u "${GREETER_USER}" >/dev/null 2>&1; then

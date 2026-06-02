@@ -278,6 +278,11 @@ bool installGreeterSystemLayout(const std::string_view greeterUser,
     return false;
   }
 
+  const std::string greeterAccount(greeterUser);
+  if (!setPathOwner(dataDir, greeterAccount, errorOut)) {
+    return false;
+  }
+
   const auto confPath = greeterConfPath();
   const bool confExisted = std::filesystem::exists(confPath, ec) && !ec;
   KeyValueMap map = loadKeyValues(confPath);
@@ -291,7 +296,6 @@ bool installGreeterSystemLayout(const std::string_view greeterUser,
   if (!setPathMode(confPath, kGreeterConfMode, errorOut)) {
     return false;
   }
-  const std::string greeterAccount(greeterUser);
   if (!setPathOwner(confPath, greeterAccount, errorOut)) {
     return false;
   }
@@ -321,6 +325,11 @@ bool saveGreeterPreferences(const GreeterPreferences &prefs) {
   }
 
   if (!writeKeyValues(path, map)) {
+    if (!std::filesystem::exists(path)) {
+      kLog.warn("cannot create {}; greetd user needs write access to {} (run: "
+                "noctalia-greeter-apply-appearance --setup-system)",
+                path.string(), path.parent_path().string());
+    }
     return false;
   }
 
