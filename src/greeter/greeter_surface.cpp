@@ -40,6 +40,7 @@
 #include <json.hpp>
 #include <linux/input-event-codes.h>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 namespace {
@@ -1261,7 +1262,7 @@ void GreeterSurface::loadUsers() {
         shell.find("false") != std::string::npos) {
       continue;
     }
-    users.push_back({user, uid});
+    users.push_back({std::move(user), uid});
   }
   ::endpwent();
 
@@ -1277,8 +1278,8 @@ void GreeterSurface::loadUsers() {
 
   m_users.reserve(users.size());
   m_userUids.reserve(users.size());
-  for (const UserEntry &user : users) {
-    m_users.push_back(user.name);
+  for (UserEntry &user : users) {
+    m_users.push_back(std::move(user.name));
     m_userUids.push_back(user.uid);
   }
 
